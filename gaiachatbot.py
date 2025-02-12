@@ -15,7 +15,7 @@ logging.basicConfig(
 )
 
 # Configuration
-BASE_URL = "https://tejumola.gaia.domain"  # Updated base URL
+BASE_URL = "https://tejumola.gaia.domains"  # Updated base URL
 MODEL = "qwen2-0.5b-instruct"
 MAX_RETRIES = 100  # Essentially infinite retries
 RETRY_DELAY = 5  # Seconds between retries
