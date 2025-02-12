@@ -2,8 +2,9 @@ import requests
 import time
 
 # Configuration
-BASE_URL = "https://Tejumola.gaia.domains"
+BASE_URL = "https://tejumola.gaia.domains"
 MODEL = "qwen2-0.5b-instruct"
+TIME_INTERVAL = 5  # Set to 5 seconds
 
 # Function to interact with the AI API
 def chat_with_ai(prompt):
@@ -20,21 +21,16 @@ def chat_with_ai(prompt):
         response = requests.post(url, json=data, headers=headers, timeout=10)
         response.raise_for_status()
         return response.json().get("choices", [{}])[0].get("message", {}).get("content", "No response received from AI.")
-    
     except requests.exceptions.Timeout:
-        return "Error: The request timed out. The AI server may be slow or unreachable."
-    
+        return "Error: Request timed out. The AI server is taking too long to respond."
     except requests.exceptions.ConnectionError:
-        return "Error: Network issue detected. Check your internet connection and try again."
-    
+        return "Error: Network issue detected. Please check your internet connection and try again."
     except requests.exceptions.HTTPError as e:
-        return f"Error: HTTP {e.response.status_code} - {e.response.text}. The server responded with an issue."
-    
+        return f"Error: Server responded with status code {e.response.status_code}. Check the API endpoint."
     except requests.exceptions.RequestException as e:
-        return f"Error: A request error occurred - {str(e)}"
-    
+        return f"Error: An unexpected issue occurred: {str(e)}"
     except Exception as e:
-        return f"Error: An unexpected issue occurred - {str(e)}"
+        return f"Error: A general exception occurred: {str(e)}"
 
 # List of refined questions
 questions = [
@@ -70,10 +66,17 @@ questions = [
     "Propose a resolution to the black hole information paradox, integrating holography, quantum gravity, and entropy considerations."
 ]
 
-# Looping through questions indefinitely
+# Infinite loop to continuously ask AI questions
+question_index = 0
 while True:
-    for question in questions:
-        print(f"Question: {question}")
-        answer = chat_with_ai(question)
-        print(f"AI Response: {answer}\n")
-        time.sleep(5)  # Wait 1 minute before asking the next question
+    question = questions[question_index]
+    print(f"\nQuestion: {question}")
+    
+    answer = chat_with_ai(question)
+    print(f"AI Response: {answer}\n")
+    
+    # Move to the next question, loop back to start if at the end
+    question_index = (question_index + 1) % len(questions)
+    
+    # Wait for the defined time interval
+    time.sleep(TIME_INTERVAL)
