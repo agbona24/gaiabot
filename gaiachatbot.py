@@ -1,4 +1,5 @@
 import requests
+import time
 
 # Configuration
 BASE_URL = "https://Tejumola.gaia.domains"
@@ -19,14 +20,21 @@ def chat_with_ai(prompt):
         response = requests.post(url, json=data, headers=headers, timeout=10)
         response.raise_for_status()
         return response.json().get("choices", [{}])[0].get("message", {}).get("content", "No response received from AI.")
+    
     except requests.exceptions.Timeout:
-        return "The request took too long. Please try again later."
+        return "Error: The request timed out. The AI server may be slow or unreachable."
+    
     except requests.exceptions.ConnectionError:
-        return "Network issue detected. Check your internet connection and try again."
+        return "Error: Network issue detected. Check your internet connection and try again."
+    
     except requests.exceptions.HTTPError as e:
-        return f"Server responded with an error: {e.response.status_code}. Please try again later."
+        return f"Error: HTTP {e.response.status_code} - {e.response.text}. The server responded with an issue."
+    
+    except requests.exceptions.RequestException as e:
+        return f"Error: A request error occurred - {str(e)}"
+    
     except Exception as e:
-        return f"An unexpected error occurred: {str(e)}."
+        return f"Error: An unexpected issue occurred - {str(e)}"
 
 # List of refined questions
 questions = [
@@ -62,8 +70,10 @@ questions = [
     "Propose a resolution to the black hole information paradox, integrating holography, quantum gravity, and entropy considerations."
 ]
 
-# Asking the AI each question and displaying responses
-for question in questions:
-    print(f"Question: {question}")
-    answer = chat_with_ai(question)
-    print(f"AI Response: {answer}\n")
+# Looping through questions indefinitely
+while True:
+    for question in questions:
+        print(f"Question: {question}")
+        answer = chat_with_ai(question)
+        print(f"AI Response: {answer}\n")
+        time.sleep(60)  # Wait 1 minute before asking the next question
