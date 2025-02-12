@@ -76,4 +76,4 @@ while True:
         print(f"Question: {question}")
         answer = chat_with_ai(question)
         print(f"AI Response: {answer}\n")
-        time.sleep(60)  # Wait 1 minute before asking the next question
+        time.sleep(5)  # Wait 1 minute before asking the next question
